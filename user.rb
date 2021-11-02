@@ -20,21 +20,6 @@ class User < ModelBase
         @lname = options['lname']
     end
 
-    def save 
-        if self.id 
-            update
-        else
-            QuestionsDatabase.instance.execute(<<-SQL, self.fname, self.lname)
-                INSERT INTO 
-                    users (fname, lname)
-                VALUES
-                    (?, ?)
-            SQL
-            self.id = QuestionsDatabase.instance.last_insert_row_id
-        end
-
-    end 
-
     def update
         QuestionsDatabase.instance.execute(<<-SQL, self.fname, self.lname, self.id)
         UPDATE

@@ -12,21 +12,6 @@ class Reply < ModelBase
         @body = options['body']
     end
 
-    def save 
-        if self.id 
-            update
-        else
-            QuestionsDatabase.instance.execute(<<-SQL, self.question_id, self.parent_id, self.user_id, self.body)
-                INSERT INTO 
-                    replies (question_id, parent_id, user_id, body)
-                VALUES
-                    (?, ?, ?, ?)
-            SQL
-            self.id = QuestionsDatabase.instance.last_insert_row_id
-        end
-
-    end 
-
     def update
         QuestionsDatabase.instance.execute(<<-SQL, self.question_id, self.parent_id, self.user_id, self.body, self.id)
         UPDATE
