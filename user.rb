@@ -16,13 +16,39 @@ class User
 
     def self.all
         data = QuestionsDatabase.instance.execute("SELECT * FROM users")
-        data.map { |datum| Question.new(datum) }
+        data.map { |datum| User.new(datum) }
     end
 
     def initialize(options)
         @id = options['id']
         @fname = options['fname']
         @lname = options['lname']
+    end
+
+    def save 
+        if self.id 
+            update
+        else
+            QuestionsDatabase.instance.execute(<<-SQL, self.fname, self.lname)
+                INSERT INTO 
+                    users (fname, lname)
+                VALUES
+                    (?, ?)
+            SQL
+            self.id = QuestionsDatabase.instance.last_insert_row_id
+        end
+
+    end 
+
+    def update
+        QuestionsDatabase.instance.execute(<<-SQL, self.fname, self.lname, self.id)
+        UPDATE
+            users
+        SET
+            fname = ?, lname = ?
+        WHERE
+            id = ?
+        SQL
     end
 
     def self.find_by_id(id)
