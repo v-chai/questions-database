@@ -16,14 +16,40 @@ class Question
     end
 
     def self.find_by_id(id)
-        question = QuestionsDatabase.instance.execute(<<-SQL, id)
+        q = QuestionsDatabase.instance.execute(<<-SQL, id)
             SELECT * 
             FROM questions 
             WHERE id = ?
         SQL
         
-        Question.new(question[0])
+        Question.new(q[0])
     end
 
+    def self.find_by_author_id(author_id)
+        qs = QuestionsDatabase.instance.execute(<<-SQL, author_id)
+            SELECT * 
+            FROM questions 
+            WHERE user_id = ?
+        SQL
+        
+        qs.map { |question| Question.new(question) }
+    end
 
+    def author
+        data = QuestionsDatabase.instance.execute(<<-SQL, @user_id)
+            SELECT * 
+            FROM users 
+            WHERE id = ?
+        SQL
+        User.new(data[0])
+
+    end
+
+    def replies
+        Reply.find_by_question(@id)
+    end
+
+    def followers
+        QuestionFollow.followers_for_question_id(@id)
+    end
 end

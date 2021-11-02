@@ -12,13 +12,22 @@ class Reply
     end
 
     def self.find_by_id(id)
-        reply = QuestionsDatabase.instance.execute(<<-SQL, id)
+        data = QuestionsDatabase.instance.execute(<<-SQL, id)
             SELECT * 
             FROM replies 
             WHERE id = ?
         SQL
         
-        Reply.new(reply[0])
+        Reply.new(data[0])
+    end
+
+    def self.find_by_author_id(id)
+        data = QuestionsDatabase.instance.execute(<<-SQL, id)
+            SELECT * 
+            FROM replies
+            WHERE user_id = ?
+        SQL
+        data.map { |datum| Reply.new(datum) }
     end
 
     def self.find_by_question(id)
@@ -30,5 +39,44 @@ class Reply
         data.map { |datum| Reply.new(datum) }
     end
 
+    def author 
+        data = QuestionsDatabase.instance.execute(<<-SQL, @user_id)
+            SELECT * 
+            FROM users 
+            WHERE id = ?
+        SQL
+        User.new(data[0])
+    end
+
+    def question 
+        data = QuestionsDatabase.instance.execute(<<-SQL, @question_id)
+            SELECT * 
+            FROM questions 
+            WHERE id = ?
+        SQL
+        Question.new(data[0])
+    end
+
+    def parent_reply
+        if @parent_id
+            data = QuestionsDatabase.instance.execute(<<-SQL, @parent_id)
+                SELECT * 
+                FROM replies 
+                WHERE id = ?
+            SQL
+            return Reply.new(data[0]) 
+        else
+            "Top-level reply. No parent."
+        end
+    end 
+
+    def child_replies
+        data = QuestionsDatabase.instance.execute(<<-SQL, @id)
+            SELECT * 
+            FROM replies 
+            WHERE parent_id = ?
+        SQL
+        data.map { |datum| Reply.new(datum) }
+    end
 
 end

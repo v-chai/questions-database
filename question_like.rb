@@ -27,4 +27,34 @@ class QuestionLike
         SQL
         data.map { |datum| QuestionLike.new(datum) }
     end
+
+    def self.likers_by_question(id)
+        data = QuestionsDatabase.instance.execute(<<-SQL, id)
+            SELECT u.id, u.fname, u.lname
+            FROM users u
+            JOIN question_likes ql ON ql.user_id = u.id
+            WHERE question_id = ?
+        SQL
+        data.map { |datum| User.new(datum) }
+    end
+
+    def self.num_likes_by_question(id)
+        data = QuestionsDatabase.instance.execute(<<-SQL, id)
+            SELECT COUNT(*) AS num_likes
+            FROM question_likes
+            GROUP BY question_id
+            HAVING question_id = ?
+        SQL
+        data[0]['num_likes']
+    end
+
+    def self.liked_questions_for_user_id(user_id)
+        data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
+            SELECT q.id, q.title, q.body, q.user_id
+            FROM questions q
+            JOIN question_likes ql ON ql.question_id = q.id
+            WHERE ql.user_id = ?
+        SQL
+        data.map { |datum| Question.new(datum) }
+    end
 end

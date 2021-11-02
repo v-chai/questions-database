@@ -41,7 +41,15 @@ class User
             FROM users 
             WHERE fname = ? AND lname = ?
         SQL
-        
         User.new(user_info[0])
     end
+
+    def authored_replies
+        Reply.find_by_author_id(@id)
+    end
+
+    def followed_questions
+        QuestionFollow.followed_questions_for_user_id(@id)
+    end
+
 end
