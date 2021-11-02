@@ -1,12 +1,8 @@
 require_relative "user"
+require_relative "model_base"
 
-class Question
+class Question < ModelBase
     attr_accessor :id, :title, :body, :user_id
-
-    def self.all
-        data = QuestionsDatabase.instance.execute("SELECT * FROM questions")
-        data.map { |datum| Question.new(datum) }
-    end
     
     def initialize(options)
         @id = options['id']
@@ -39,16 +35,6 @@ class Question
         WHERE
             id = ?
         SQL
-    end
-
-    def self.find_by_id(id)
-        q = QuestionsDatabase.instance.execute(<<-SQL, id)
-            SELECT * 
-            FROM questions 
-            WHERE id = ?
-        SQL
-        
-        Question.new(q[0])
     end
 
     def self.find_by_author_id(author_id)
