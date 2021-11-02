@@ -20,6 +20,16 @@ class ModelBase
         self.new(data[0])
     end
 
+    def self.where(options)
+        vars = options.keys.map { |k|  k.to_s + ' = ?'}
+        data = QuestionsDatabase.instance.execute(<<-SQL, *options.values)
+            SELECT * 
+            FROM #{self.table_name}
+            WHERE #{vars.join(" AND ")}
+        SQL
+        self.new(data[0])
+    end
+
     def save 
         if self.id 
             update
