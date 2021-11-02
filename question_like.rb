@@ -74,4 +74,18 @@ class QuestionLike
         SQL
         data.map { |datum| Question.new(datum) }
     end
+
+    def self.average_karma(author_id)
+        data = QuestionsDatabase.instance.execute(<<-SQL, author_id)
+            WITH authored_questions AS (
+                SELECT id, COUNT(DISTINCT(id)) AS question_count
+                FROM questions
+                WHERE user_id = ?
+            )
+            SELECT CAST(COUNT(*) AS FLOAT)/CAST(ac.question_count AS FLOAT) AS avg_karma
+            FROM question_likes l
+            INNER JOIN authored_questions ac ON ac.id = l.question_id
+        SQL
+        data[0]['avg_karma']
+    end 
 end

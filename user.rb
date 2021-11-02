@@ -56,4 +56,8 @@ class User
         QuestionLike.liked_questions_for_user_id(@id)
     end
 
+    def avg_karma
+        QuestionLike.average_karma(@id)
+    end
+
 end
