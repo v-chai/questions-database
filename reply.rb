@@ -12,17 +12,6 @@ class Reply < ModelBase
         @body = options['body']
     end
 
-    def update
-        QuestionsDatabase.instance.execute(<<-SQL, self.question_id, self.parent_id, self.user_id, self.body, self.id)
-        UPDATE
-            replies
-        SET
-            question_id = ?, parent_id= ?, user_id = ?, body = ?
-        WHERE
-            id = ?
-        SQL
-    end
-
     def self.find_by_author_id(id)
         data = QuestionsDatabase.instance.execute(<<-SQL, id)
             SELECT * 

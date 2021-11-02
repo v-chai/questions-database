@@ -20,17 +20,6 @@ class User < ModelBase
         @lname = options['lname']
     end
 
-    def update
-        QuestionsDatabase.instance.execute(<<-SQL, self.fname, self.lname, self.id)
-        UPDATE
-            users
-        SET
-            fname = ?, lname = ?
-        WHERE
-            id = ?
-        SQL
-    end
-
     def self.find_by_name(fname, lname)
         user_info = QuestionsDatabase.instance.execute(<<-SQL, fname, lname)
             SELECT * 

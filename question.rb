@@ -11,17 +11,6 @@ class Question < ModelBase
         @user_id = options['user_id']
     end
 
-    def update
-        QuestionsDatabase.instance.execute(<<-SQL, self.title, self.body, self.user_id, self.id)
-        UPDATE
-            questions
-        SET
-            title = ?, body = ?, user_id = ?
-        WHERE
-            id = ?
-        SQL
-    end
-
     def self.find_by_author_id(author_id)
         qs = QuestionsDatabase.instance.execute(<<-SQL, author_id)
             SELECT * 

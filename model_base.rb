@@ -34,12 +34,27 @@ class ModelBase
         end
     end 
 
+    def update
+        QuestionsDatabase.instance.execute(<<-SQL, *self.instance_vals, self.id)
+        UPDATE
+            #{self.table_name}
+        SET
+            #{self.non_id_updates}
+        WHERE
+            id = ?
+        SQL
+    end
+
     def column_names
         self.instance_variables.map(&:to_s).map {|el| el.tr("@","") }
     end
 
     def non_id_cols 
         self.column_names[1..-1].join(", ")
+    end
+
+    def non_id_updates
+        self.column_names[1..-1].join(" = ?, ") + " = ?"
     end
 
     def instance_vals
