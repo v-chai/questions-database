@@ -60,4 +60,8 @@ class Question
     def likers
         QuestionLike.likers_by_question(@id)
     end
+
+    def self.most_liked(n)
+        QuestionLike.most_liked_questions(n)
+    end 
 end
