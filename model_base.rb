@@ -20,14 +20,31 @@ class ModelBase
         self.new(data[0])
     end
 
-    def self.where(options)
+    def self.filter(options)
         vars = options.keys.map { |k|  k.to_s + ' = ?'}
         data = QuestionsDatabase.instance.execute(<<-SQL, *options.values)
             SELECT * 
             FROM #{self.table_name}
             WHERE #{vars.join(" AND ")}
         SQL
-        self.new(data[0])
+        data.map { |datum| self.new(datum) }
+    end
+
+    def self.where(query)
+        if query.is_a?(Hash)
+            self.filter(query)
+        else
+            alerts = ['drop', '--', 'insert into', ';', '/*', '*/', '#']
+            if alerts.any? { |alert| query.downcase.include?(alert) } 
+                raise ArgumentError
+            end
+            data = QuestionsDatabase.instance.execute(<<-SQL, [])
+                SELECT * 
+                FROM #{self.table_name}
+                WHERE #{query}
+            SQL
+            data.map { |datum| self.new(datum) }
+        end
     end
 
     def save 
