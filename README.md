@@ -25,19 +25,19 @@ For table classes, add attribute accessors to access the instance variables.
 
 ### Code SQL Queries 
 #### Easy
-Question::find_by_author_id(author_id)
-Reply::find_by_user_id(user_id)
-Reply::find_by_question_id(question_id)
+-Question::find_by_author_id(author_id)
+-Reply::find_by_user_id(user_id)
+-Reply::find_by_question_id(question_id)
 -- All replies to the question at any depth.
-User::find_by_name(fname, lname)
-User#authored_questions (use Question::find_by_author_id)
-User#authored_replies (use Reply::find_by_user_id)
-Question#author
-Question#replies (use Reply::find_by_question_id)
-Reply#author
-Reply#question
-Reply#parent_reply
-Reply#child_replies
+  User::find_by_name(fname, lname)
+  User#authored_questions (use Question::find_by_author_id)
+  User#authored_replies (use Reply::find_by_user_id)
+  Question#author
+  Question#replies (use Reply::find_by_question_id)
+  Reply#author
+  Reply#question
+  Reply#parent_reply
+  Reply#child_replies
 -- Only do child replies one-deep; don't find grandchild comments.
 
 #### Medium
